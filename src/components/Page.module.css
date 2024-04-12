@@ -1,5 +1,5 @@
 .header {
-    background-color: var(--card-color);
+    background-color: #1e965c;
     padding: 10px;
     border-bottom: 2px solid var(--card-border-color);
     width: 100%;
@@ -11,4 +11,5 @@
 
 .header h1 {
     margin: auto;
+    color: #fff;
 }

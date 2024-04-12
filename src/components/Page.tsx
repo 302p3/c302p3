@@ -1,5 +1,5 @@
 import React from 'react';
-import Head from 'next/head';
+import { ArrowLeft } from 'react-bootstrap-icons';
 import styles from "./Page.module.css";
 
 export function Header({ text, children, hasBackButton = true } : { text?: string, children?: React.ReactNode, hasBackButton?: boolean }) {
@@ -24,9 +24,7 @@ export function Header({ text, children, hasBackButton = true } : { text?: strin
     }
 
     return <div className={styles.header}>
-        {hasBackButton ? <button onClick={onBackClicked}>  
-            ← Back
-        </button> : null}
+        <ArrowLeft onClick={onBackClicked} style={{ width: 32, height: "100%", color: "#fff", cursor: "pointer" }} />
         {headerContent}
     </div>;
 };

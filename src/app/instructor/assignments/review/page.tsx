@@ -38,43 +38,46 @@ const yamlContent = `
         content: "I believe that this is creative because of ..."
         id: 4
         type: "ai"
-    
-
-    general:
-      - comment: Lorem Ipsum dolet sit amur
-      - comment: This is yet another comment, I don't quite know what I am commenting on
-      - comment: YAAAAAA
+      - position:
+          start: 8000
+          end: 9000
+        content: "This has a high probability of being written using ChatGPT."
+        id: 5
+        type: "plagiarism"
   `;
-
 
 
 const InstructorReviewPage = () => {
   // Parse YAML content
   const [data, setData] = useState<{
     rubric: { category: string, max_marks: number }[],
-    comments: { position: { start: number, end: number }, content: string, id: number, type: "instructor"|"ai" }[],
-    general: { comment: string }[]
+    comments: { position: { start: number, end: number }, content: string, id: number, type: "instructor"|"ai"|"plagiarism" }[],
   }>(yaml.load(yamlContent) as any);
   const [resizeTrigger, setResizeTrigger] = useState(false);
+  const [activeCommentId, setActiveCommentId] = useState(-1);
 
   // Extract rubric and comments from data object
-  const { rubric, comments, general } = data;
+  const { comments } = data;
 
   // Text content of the assignment
   let assignmentContent = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
   assignmentContent = assignmentContent.repeat(100); // uncomment to extend lorem ipsum to test scrolling
+
+  const [generalCommentText, setGeneralCommentText] = useState("This essay demonstrates a remarkable depth of understanding on the topic, utilizing a sophisticated blend of research and critical analysis. The structure is clear and logical, guiding the reader seamlessly through complex ideas. Moreover, the language is both eloquent and precise, showcasing a mastery of communication. Overall, this essay exemplifies excellence in scholarship and is a testament to the author's intellectual prowess.");
 
   const commentDivs = comments.sort((a, b) => a.position.end - b.position.end).map(({ content, id, type }, index: number) => {
     return (
       <div
         key={index}
         data-comment-id={id}
-        className={styles['comment']}>
+        className={styles['comment']}
+        onClick={() => setActiveCommentId(id)}
+        >
         <div style={{ position: "relative" }}>
-          <div className={styles['comment-x-line']} data-comment-id={id}></div>,
-          <b>{type === "ai" ? "AI Comment" : "Comment"}</b> <br />
+          <div className={styles['comment-x-line']} data-comment-id={id}></div>
+          <b>{type === "ai" || type === "plagiarism" ? "AI Comment" : "Comment"}</b> <br />
           <hr /><br />
-          <span contentEditable={true} onInput={() => onResize()}>{content}</span>
+          <div contentEditable={type === "instructor"} onInput={() => onResize()}>{content}</div>
         </div>
       </div>
     );
@@ -136,16 +139,21 @@ const InstructorReviewPage = () => {
     }
   }, [ commentDivs, commentLineDivs ]);
 
-  function onCommentClick(event: React.MouseEvent<HTMLSpanElement>) {
-    const target = event.target as HTMLElement;
-    const id = target.getAttribute("data-comment-id");
-
+  useEffect(() => {
     document.querySelectorAll(`.${styles['comment']}`).forEach(commentDiv => commentDiv.classList.remove(styles.active));
     document.querySelectorAll(`.${styles['comment-x-line']}`).forEach(lineDiv => lineDiv.classList.remove(styles.active));
     document.querySelectorAll(`.${styles['comment-y-line']}`).forEach(lineDiv => lineDiv.classList.remove(styles.active));
-    const commentDivs = document.querySelectorAll(`.${styles['comment']}[data-comment-id="${id}"], .${styles['comment-x-line']}[data-comment-id="${id}"], .${styles['comment-y-line']}[data-comment-id="${id}"]`);
+    if (activeCommentId === -1) {
+      return;
+    }
+    const commentDivs = document.querySelectorAll(`.${styles['comment']}[data-comment-id="${activeCommentId}"], .${styles['comment-x-line']}[data-comment-id="${activeCommentId}"], .${styles['comment-y-line']}[data-comment-id="${activeCommentId}"]`);
     commentDivs.forEach(div => div.classList.add(styles.active));
-    
+  }, [activeCommentId]);
+
+  function onCommentClick(event: React.MouseEvent<HTMLSpanElement>) {
+    const target = event.target as HTMLElement;
+    const id = target.getAttribute("data-comment-id");
+    setActiveCommentId(parseInt(id!));
   }
 
   useEffect(() => {
@@ -205,9 +213,9 @@ const InstructorReviewPage = () => {
         });
         setData({
           rubric: data.rubric,
-          comments: data.comments,
-          general: data.general
+          comments: data.comments
         });
+        setActiveCommentId(data.comments.length);
 
       }
     }
@@ -237,7 +245,8 @@ const InstructorReviewPage = () => {
           <div className={styles['main-layout']}>
             <div className={styles['review-page']}>
               <div className={styles['left-column']}>
-                <h2>English</h2>
+                <h2 style={{ margin: 0 }}>ENGL 302</h2>
+                <h4>Student 1</h4>
                 <div className={`${styles['assignment-details']}`}> {/* Apply left-column-content style here */}
                   <h3>Rubric Details</h3>
                 </div>
@@ -246,8 +255,8 @@ const InstructorReviewPage = () => {
                 </div>
                 <br />
                 <div className={styles['general-comments-section']}>
-                  <h3>General Comments</h3>
-                  <textarea placeholder="Type overall thoughts on the assignment for the student to review" />
+                  <h3>General Comment</h3>
+                  <textarea placeholder="Type overall thoughts on the assignment for the student to review" value={generalCommentText} onChange={function(e) { setGeneralCommentText(e.target.value)}} />
                   <br /><br />
                   <button onClick={handleCompleteMarking}>
                     Complete Marking
@@ -276,7 +285,14 @@ const InstructorReviewPage = () => {
                         <React.Fragment key={index}>
                           <span>{beforeComment}</span>
                           <span
-                            className={comment.type === "ai" ? `${styles['highlighted-text']} ${styles['ai']}` : styles['highlighted-text']}
+                            className={
+                              comment.type === "plagiarism"
+                              ?
+                                `${styles['highlighted-text']} ${styles['plagiarism']}`
+                              :
+                                comment.type === "ai"
+                                ? `${styles['highlighted-text']} ${styles['ai']}`
+                                : styles['highlighted-text']}
                             data-comment-id={comment.id}
                             onClick={onCommentClick}
                           >
@@ -289,8 +305,9 @@ const InstructorReviewPage = () => {
                   </div>
                 </div>
                 <div className={styles['right-column']}>
-                  <h3>Content Comments</h3>
+                  <h3>Assignment Comments</h3>
                   <strong>Highlight text to make a comment!</strong>
+                  <hr style={{ marginTop: 5, borderBottom: "1px solid #bbb" }} />
                   {commentDivs}
                 </div>
               </div>
