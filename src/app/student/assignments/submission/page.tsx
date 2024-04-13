@@ -144,8 +144,8 @@ const Submission = () => {
             </div>
           )}
           <div className={styles.buttons}>
-            <button onClick={handleSubmit}>Submit</button>
             <button onClick={goBack}>Back</button>
+            <button onClick={handleSubmit}>Submit</button>
           </div>
         </div>
       </Body>
