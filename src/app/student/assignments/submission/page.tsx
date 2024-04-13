@@ -3,78 +3,73 @@
 import React, { useState } from 'react';
 import styles from './page.module.css';
 import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
 import Page, { Body, Header } from '@/components/Page';
 
-const rubricHTML = `
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mathematics Rubric</title>
-    <style>
-      body {
-        background-color: white; /* Set background color of the body */
-        font-family: Arial, sans-serif; /* Use a common font for better readability */
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 20px; /* Add some margin at the bottom for spacing */
-      }
-      th, td {
-        border: 1px solid black;
-        padding: 8px;
-        text-align: center;
-      }
-      th {
-        background-color: #f2f2f2;
-        font-weight: bold; /* Make table headers bold */
-      }
-      td:first-child {
-        text-align: left; /* Align first column content to the left */
-      }
-    </style>
-  </head>
-  <body>
-    <h2>Mathematics Rubric</h2>
-    <table>
-      <tr>
-        <th>Criteria</th>
-        <th>Score</th>
-      </tr>
-      <tr>
-        <td>Less than 25% errors</td>
-        <td>0</td>
-      </tr>
-      <tr>
-        <td>25-75% correct</td>
-        <td>50</td>
-      </tr>
-      <tr>
-        <td>75-100% correct</td>
-        <td>100</td>
-      </tr>
-    </table>
-  </body>
-  </html>
-`;
-
 const Submission = () => {
-  const searchParams = useSearchParams();
-  const submitted = searchParams.get('submitted');
-
-  // Dummy assignment data
+  // Get assignment data
   const assignment = {
-    name: 'Assignment 1',
-    dueDate: '2024-03-20',
-    className: 'Mathematics',
-    rubricUrl: 'https://example.com/rubric'
+    name: localStorage.getItem("assignment-name"),
+    dueDate: localStorage.getItem("assignment-date"),
+    className: localStorage.getItem("assignment-class"),
   };
 
+  const rubricHTML = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>${assignment.className} Rubric</title>
+      <style>
+        body {
+          background-color: white; /* Set background color of the body */
+          font-family: Arial, sans-serif; /* Use a common font for better readability */
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-bottom: 20px; /* Add some margin at the bottom for spacing */
+        }
+        th, td {
+          border: 1px solid black;
+          padding: 8px;
+          text-align: center;
+        }
+        th {
+          background-color: #f2f2f2;
+          font-weight: bold; /* Make table headers bold */
+        }
+        td:first-child {
+          text-align: left; /* Align first column content to the left */
+        }
+      </style>
+    </head>
+    <body>
+      <h2>${assignment.className} Rubric</h2>
+      <table>
+        <tr>
+          <th>Criteria</th>
+          <th>Score</th>
+        </tr>
+        <tr>
+          <td>Less than 25% errors</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <td>25-75% correct</td>
+          <td>50</td>
+        </tr>
+        <tr>
+          <td>75-100% correct</td>
+          <td>100</td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `;
+
   // Variables
-  const [assignmentUploaded, setAssignmentUploaded] = useState((submitted === "true"));
+  const [assignmentUploaded, setAssignmentUploaded] = useState((localStorage.getItem("assignment-status") === "true"));
 
   const handleFileUpload = (event) => {
     // Handle file drop functionality here (not implemented yet)
@@ -86,13 +81,14 @@ const Submission = () => {
   const handleSubmit = () => {
     // Handle submit functionality here (not implemented yet)
     console.log('Assignment submitted');
-    location.href='/student/assignments?submitted=true'
+    location.href='/student/assignments?submitted=true';
+    <a href='/student/assignments/submission?submitted=false'>Upload a different file?</a>
   };
 
   const goBack = () => {
     // Handle go back functionality here (not implemented yet)
     console.log('Go back');
-    location.href='/student/assignments'
+    location.href=`/student/assignments?submitted=`;
   };
 
   const showRubricInNewTab = () => {

@@ -20,13 +20,17 @@ interface Course {
   name: string;
 }
 
-function handleClick(state) {
-  if (state == 'not-submitted') {
-    location.href='/student/assignments/submission?submitted=false';
-  } else if (state == 'submitted') {
-    location.href='/student/assignments/submission?submitted=true';
-  } else if (state == 'graded') {
-    location.href='/student/assignments/review';
+function handleClick(assignment: Assignment, course: Course) {
+  // Store assignment data so it can be accessed
+  localStorage.setItem("assignment", assignment.name);
+  localStorage.setItem("assignment-date", assignment.dueDate);
+  localStorage.setItem("assignment-class", course.name);
+  localStorage.setItem("assignment-status", assignment.state);
+  // Direct user to correct page
+  if (assignment.state == 'not-submitted' || assignment.state == 'submitted') {
+    location.href=`/student/assignments/submission?id=${assignment.id}`;
+  } else if (assignment.state == 'graded') {
+    location.href=`/student/assignments/review?id=${assignment.id}`;
   }
 }
 
@@ -126,7 +130,7 @@ const StudentAssignments = () => {
                       </div>
                       </div>
                       <button className={`${styles['assignment-button']} ${getButtonClass(assignment.state)}`}
-                              onClick={() => handleClick(assignment.state)}
+                              onClick={() => handleClick(assignment, course)}
                       >
                         {getButtonText(assignment.state)}
                       </button>
