@@ -73,6 +73,7 @@
   align-items: stretch;
   flex: 1;
   max-width: 80%;
+  min-width: 80vw;
   min-height: calc(100vh - 70px);
   height: max-content;
   overflow-y: auto;

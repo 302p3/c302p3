@@ -68,7 +68,7 @@ export default function InstructorGradeSummary() {
 
   const studentMarksData = useRef([
     { category: "Grammar", student_marks: 8 },
-    { category: "Content", student_marks: 15 }
+    { category: "Content", student_marks: 7 }
     // Add student marks for each category
   ]);
 

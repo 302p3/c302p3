@@ -5,6 +5,7 @@ import styles from './page.module.css';
 import * as yaml from 'js-yaml'; // Import the js-yaml library
 import Page, { Header, Body } from "../../../../components/Page";
 import InstructorGradeSummary from './InstructorGradeSummary';
+import Summary from './Summary';
 
 const yamlContent = `
     rubric:
@@ -55,6 +56,7 @@ const InstructorReviewPage = () => {
   }>(yaml.load(yamlContent) as any);
   const [resizeTrigger, setResizeTrigger] = useState(false);
   const [activeCommentId, setActiveCommentId] = useState(-1);
+  const [aiView, setAiView] = useState(false);
 
   // Extract rubric and comments from data object
   const { comments } = data;
@@ -91,6 +93,8 @@ const InstructorReviewPage = () => {
   const onResize = useCallback(function() {
     // Yes. this is a copy of the onResize function below.
     // I have this copy.
+    if (aiView) return;
+
     let cannotBeLessThan = 0; // overlap check
     for (let i = 0; i < commentDivs.length; i++) {
       const commentReactDiv = commentDivs[i] as React.ReactElement;
@@ -137,7 +141,7 @@ const InstructorReviewPage = () => {
       commentYLineDiv.style.left = "calc(60vw - 20px)";
       console.log(commentYLineDiv, highlightedText.offsetTop - commentDiv.offsetTop);
     }
-  }, [ commentDivs, commentLineDivs ]);
+  }, [ commentDivs, commentLineDivs, aiView ]);
 
   useEffect(() => {
     document.querySelectorAll(`.${styles['comment']}`).forEach(commentDiv => commentDiv.classList.remove(styles.active));
@@ -233,12 +237,11 @@ const InstructorReviewPage = () => {
   return (
     <Page>
       <Header>
-        <h1>Review</h1>
-        {/* <div>
-          <Form>
-            <Form.Check type="switch" label="AI Review" />
-          </Form>
-        </div> */}
+        <h1>Review Assignment</h1>
+        <div style={{ display: "flex" }}>
+          <label htmlFor="aiReview" style={{ margin: 0, color: "yellow", fontSize: "1.25em" }}>AI Review</label>
+          <input id="aiReview" style={{ marginLeft: 10, width: "1.25em" }} type="checkbox" checked={aiView} onChange={e => setAiView(e.target.checked)} />
+        </div>
       </Header>
       <div>
         <Body>
@@ -265,50 +268,97 @@ const InstructorReviewPage = () => {
               </div>
               <div className={styles['assignment-and-comments']} style={{ position: "relative" }}>
                 <div data-component="comments">
-                  {commentLineDivs}
+                  {aiView ? null : commentLineDivs}
                 </div>
                 <div className={styles['center-column']}>
                   <div className={styles['assignment-header']}>
                     <h1>Assignment Name</h1>
                   </div>
                   <div className={styles['ipsum-content']}>
-                    <h2>Assignment Content</h2>
+                    <h2>{aiView ? "Assignment Summary" : "Assignment Content"}</h2>
                     {/* Split the assignment content and wrap sections corresponding to comments with spans */}
-                    {comments.map((comment, index: number) => {
-                      const { start, end } = comment.position;
-                      const beforeComment = index === 0 ? assignmentContent.slice(0, start) : "";
-                      const commentText = assignmentContent.slice(start, end + 1);
+                    {
+                      aiView
+                      ?
+                        <>
+                          <Summary 
+                            summary="This paragraph appears to be talking about the Lorem Ipsum template text and how it originated." 
+                            comments={[
+                              "You need to work on your grammar in this paragraph.",
+                              "Great job on including relevant content here!",
+                              "Likely plagiarized from Wikipedia",
+                            ]} 
+                            originalText='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet' 
+                            conclusion='This text is repeated throughout the document and is likely plagiarized from Wikipedia.'
+                            gradeEffect={{
+                              category: "Content",
+                              points: -13
+                            }} />
+                          <Summary 
+                            summary="The text discusses the experience of labor and its associated pains, emphasizing the role of personal responsibility and the pursuit of meaningful work despite challenges." 
+                            comments={[
+                              "Watch for repetition; strive for conciseness",
+                              "Consider varying sentence structure for improved readability",
+                              "Integrate specific examples to illustrate abstract concepts",
+                              "Likely plagiarized from ChatGPT"
+                            ]} 
+                            originalText='Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et' 
+                            conclusion="It's highly likely that the text you provided is AI-generated. It contains typical filler content often produced by AI models, Additionally, the repeated phrases and lack of coherent meaning in the text suggest it was generated by a language model like me." />
+                          <Summary 
+                            summary="This paragraph is a snippet of Lorem Ipsum, which is commonly used as placeholder text in design and publishing to simulate the appearance of real content. It doesn't convey any meaningful information." 
+                            comments={[
+                              "Consider summarizing the key points discussed in the text to reinforce understanding for the reader",
+                              "Avoid introducing new information in the conclusion; instead, focus on reinforcing the ideas already presented",
+                              "Consider summarizing the key points discussed in the text to reinforce understanding for the reader"
+                            ]} 
+                            originalText='luptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit' 
+                            conclusion="The provided text lacks coherence and relevance to the assigned task. A conclusion should ideally summarize key points and offer insights or reflections based on the preceding content. In this case, the conclusion could highlight the importance of clear and focused communication, urging the writer to revisit the assignment's objectives and craft a conclusion that ties back to the main ideas presented." />
+                        </>
+                      :
+                      comments.map((comment, index: number) => {
+                        const { start, end } = comment.position;
+                        const beforeComment = index === 0 ? assignmentContent.slice(0, start) : "";
+                        const commentText = assignmentContent.slice(start, end + 1);
 
-                      const afterCommentEndPos = index === comments.length - 1 ? assignmentContent.length : comments[index + 1].position.start;
-                      const afterComment = assignmentContent.slice(end + 1, afterCommentEndPos);
-                      return (
-                        <React.Fragment key={index}>
-                          <span>{beforeComment}</span>
-                          <span
-                            className={
-                              comment.type === "plagiarism"
-                              ?
-                                `${styles['highlighted-text']} ${styles['plagiarism']}`
-                              :
-                                comment.type === "ai"
-                                ? `${styles['highlighted-text']} ${styles['ai']}`
-                                : styles['highlighted-text']}
-                            data-comment-id={comment.id}
-                            onClick={onCommentClick}
-                          >
-                            {commentText}
-                          </span>
-                          <span>{afterComment}</span>
-                        </React.Fragment>
-                      );
-                    })}
+                        const afterCommentEndPos = index === comments.length - 1 ? assignmentContent.length : comments[index + 1].position.start;
+                        const afterComment = assignmentContent.slice(end + 1, afterCommentEndPos);
+                        return (
+                          <React.Fragment key={index}>
+                            <span>{beforeComment}</span>
+                            <span
+                              className={
+                                comment.type === "plagiarism"
+                                ?
+                                  `${styles['highlighted-text']} ${styles['plagiarism']}`
+                                :
+                                  comment.type === "ai"
+                                  ? `${styles['highlighted-text']} ${styles['ai']}`
+                                  : styles['highlighted-text']}
+                              data-comment-id={comment.id}
+                              onClick={onCommentClick}
+                            >
+                              {commentText}
+                            </span>
+                            <span>{afterComment}</span>
+                          </React.Fragment>
+                        );
+                      })
+                    }
                   </div>
                 </div>
                 <div className={styles['right-column']}>
-                  <h3>Assignment Comments</h3>
-                  <strong>Highlight text to make a comment!</strong>
-                  <hr style={{ marginTop: 5, borderBottom: "1px solid #bbb" }} />
-                  {commentDivs}
+                  {
+                    !aiView
+                    ?
+                    <>
+                      <h3>Assignment Comments</h3>
+                      <strong>Highlight text to make a comment!</strong>
+                      <hr style={{ marginTop: 5, borderBottom: "1px solid #bbb" }} />
+                      {commentDivs}
+                    </>
+                    :
+                      <div></div>
+                  }
                 </div>
               </div>
             </div>
