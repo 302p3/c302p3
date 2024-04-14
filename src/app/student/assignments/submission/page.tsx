@@ -4,13 +4,25 @@ import React, { useState } from 'react';
 import styles from './page.module.css';
 import Image from 'next/image';
 import Page, { Body, Header } from '@/components/Page';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useSearchParams } from 'next/navigation';
 
 const Submission = () => {
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
+  const edit = searchParams.get('edit') == "true";
+
   // Get assignment data
+  let coursesData = JSON.parse(localStorage.getItem("courses"));
+  let assignmentsData = JSON.parse(localStorage.getItem("assignments"));
+  const assignmentData = assignmentsData.find((element) => element.id == id);
+  const courseData = coursesData.find((element) => element.id == assignmentData.courseId);
+  
   const assignment = {
-    name: localStorage.getItem("assignment-name"),
-    dueDate: localStorage.getItem("assignment-date"),
-    className: localStorage.getItem("assignment-class"),
+    name: assignmentData.name,
+    dueDate: assignmentData.dueDate,
+    className: courseData.name,
   };
 
   const rubricHTML = `
@@ -69,26 +81,39 @@ const Submission = () => {
   `;
 
   // Variables
-  const [assignmentUploaded, setAssignmentUploaded] = useState((localStorage.getItem("assignment-status") === "true"));
+  const [assignmentUploaded, setAssignmentUploaded] = useState((!edit && assignmentData.state == "submitted"));
 
   const handleFileUpload = (event) => {
-    // Handle file drop functionality here (not implemented yet)
+    // Handle file drop functionality here
     event.preventDefault();
     console.log('File uploaded');
     setAssignmentUploaded(true);
+    toast.success("Assignment Successfully Uploaded!", {
+      position: "top-center",
+      autoClose: 2500
+    });
   };
 
   const handleSubmit = () => {
-    // Handle submit functionality here (not implemented yet)
+    // Handle submit functionality
     console.log('Assignment submitted');
-    location.href='/student/assignments?submitted=true';
-    <a href='/student/assignments/submission?submitted=false'>Upload a different file?</a>
+    localStorage.setItem("assignments", JSON.stringify(assignmentsData.map((element) => {
+      if (element.id == id) {
+        return { ...element, state: "submitted" };
+      }
+      return element;
+    })));
+    location.href='/student/assignments';
   };
 
   const goBack = () => {
-    // Handle go back functionality here (not implemented yet)
+    // Handle go back functionality
     console.log('Go back');
-    location.href=`/student/assignments?submitted=`;
+    if (edit) {
+      location.href=`/student/assignments/submission?id=${id}`;
+    } else {
+      location.href=`/student/assignments`;
+    }
   };
 
   const showRubricInNewTab = () => {
@@ -102,6 +127,7 @@ const Submission = () => {
       <Header text="Submit Assignment" />
       <Body>
         <div className={styles.container}>
+          <ToastContainer />
           <div className={styles.header}>
             <h1>{assignment.name}</h1>
             <div className={styles.submissionInfo}>
@@ -126,8 +152,7 @@ const Submission = () => {
                   height={800}
                 />
                 <div className={styles.reupload}>
-                    <p>Upload a different file?</p>
-                    <input type="file" id="assignment" name="assignment" onChange={handleFileUpload} />
+                  <a href={`/student/assignments/submission?id=${id}&edit=true`}>Upload a different file?</a>
                 </div>
               </div>
             </>
@@ -141,7 +166,9 @@ const Submission = () => {
           )}
           <div className={styles.buttons}>
             <button onClick={goBack}>Back</button>
-            <button onClick={handleSubmit}>Submit</button>
+            { (edit || assignmentData.state != "submitted") ? (
+                <button onClick={handleSubmit}>Submit</button>
+              ) : null }
           </div>
         </div>
       </Body>

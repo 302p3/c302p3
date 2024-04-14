@@ -21,12 +21,6 @@ interface Course {
 }
 
 function handleClick(assignment: Assignment, course: Course) {
-  // Store assignment data so it can be accessed
-  localStorage.setItem("assignment", assignment.name);
-  localStorage.setItem("assignment-date", assignment.dueDate);
-  localStorage.setItem("assignment-class", course.name);
-  localStorage.setItem("assignment-status", assignment.state);
-  // Direct user to correct page
   if (assignment.state == 'not-submitted' || assignment.state == 'submitted') {
     location.href=`/student/assignments/submission?id=${assignment.id}`;
   } else if (assignment.state == 'graded') {
@@ -81,16 +75,27 @@ const StudentAssignments = () => {
   const coursesData: Course[] = [
     { id: 1, name: 'Mathematics' },
     { id: 2, name: 'English' },
-    // Add more courses as needed
   ];
-  
-  const assignmentsData: Assignment[] = [
+
+  let assignmentsData: Assignment[] = [
     { id: 1, courseId: 1, name: 'Assignment 1', dueDate: 'March 20, 2024', weight: '20%', state: ((submitted === 'true') ? 'submitted' : 'not-submitted'), grade: 'Grading Incomplete' },
     { id: 2, courseId: 1, name: 'Assignment 2', dueDate: 'March 25, 2024', weight: '30%', state: 'submitted', grade: 'B+' },
     { id: 3, courseId: 2, name: 'Assignment 1', dueDate: 'March 20, 2024', weight: '25%', state: 'graded', grade: 'A' },
     { id: 4, courseId: 2, name: 'Assignment 2', dueDate: 'March 25, 2024', weight: '25%', state: 'not-submitted', grade: 'Grading Incomplete' },
-    // Add more assignments as needed
   ];
+
+  // Handle stored assignment data
+  const storedData = localStorage.getItem("assignments");
+  if (storedData) {
+    // If stored data exists
+    // Load stored assignment data
+    assignmentsData = JSON.parse(storedData);
+  } else {
+    // If no stored data exists (fresh instance)
+    // Store default assignment data
+    localStorage.setItem("courses", JSON.stringify(coursesData));
+    localStorage.setItem("assignments", JSON.stringify(assignmentsData));
+  }
   
   return (
     <Page>
