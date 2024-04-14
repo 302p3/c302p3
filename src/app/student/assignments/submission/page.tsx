@@ -3,96 +3,117 @@
 import React, { useState } from 'react';
 import styles from './page.module.css';
 import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
 import Page, { Body, Header } from '@/components/Page';
-
-const rubricHTML = `
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mathematics Rubric</title>
-    <style>
-      body {
-        background-color: white; /* Set background color of the body */
-        font-family: Arial, sans-serif; /* Use a common font for better readability */
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 20px; /* Add some margin at the bottom for spacing */
-      }
-      th, td {
-        border: 1px solid black;
-        padding: 8px;
-        text-align: center;
-      }
-      th {
-        background-color: #f2f2f2;
-        font-weight: bold; /* Make table headers bold */
-      }
-      td:first-child {
-        text-align: left; /* Align first column content to the left */
-      }
-    </style>
-  </head>
-  <body>
-    <h2>Mathematics Rubric</h2>
-    <table>
-      <tr>
-        <th>Criteria</th>
-        <th>Score</th>
-      </tr>
-      <tr>
-        <td>Less than 25% errors</td>
-        <td>0</td>
-      </tr>
-      <tr>
-        <td>25-75% correct</td>
-        <td>50</td>
-      </tr>
-      <tr>
-        <td>75-100% correct</td>
-        <td>100</td>
-      </tr>
-    </table>
-  </body>
-  </html>
-`;
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useSearchParams } from 'next/navigation';
 
 const Submission = () => {
   const searchParams = useSearchParams();
-  const submitted = searchParams.get('submitted');
+  const id = searchParams.get('id');
+  const edit = searchParams.get('edit') == "true";
 
-  // Dummy assignment data
+  // Get assignment data
+  let coursesData = JSON.parse(localStorage.getItem("courses"));
+  let assignmentsData = JSON.parse(localStorage.getItem("assignments"));
+  const assignmentData = assignmentsData.find((element) => element.id == id);
+  const courseData = coursesData.find((element) => element.id == assignmentData.courseId);
+  
   const assignment = {
-    name: 'Assignment 1',
-    dueDate: '2024-03-20',
-    className: 'Mathematics',
-    rubricUrl: 'https://example.com/rubric'
+    name: assignmentData.name,
+    dueDate: assignmentData.dueDate,
+    className: courseData.name,
   };
 
+  const rubricHTML = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>${assignment.className} Rubric</title>
+      <style>
+        body {
+          background-color: white; /* Set background color of the body */
+          font-family: Arial, sans-serif; /* Use a common font for better readability */
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-bottom: 20px; /* Add some margin at the bottom for spacing */
+        }
+        th, td {
+          border: 1px solid black;
+          padding: 8px;
+          text-align: center;
+        }
+        th {
+          background-color: #f2f2f2;
+          font-weight: bold; /* Make table headers bold */
+        }
+        td:first-child {
+          text-align: left; /* Align first column content to the left */
+        }
+      </style>
+    </head>
+    <body>
+      <h2>${assignment.className} Rubric</h2>
+      <table>
+        <tr>
+          <th>Criteria</th>
+          <th>Score</th>
+        </tr>
+        <tr>
+          <td>Less than 25% errors</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <td>25-75% correct</td>
+          <td>50</td>
+        </tr>
+        <tr>
+          <td>75-100% correct</td>
+          <td>100</td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `;
+
   // Variables
-  const [assignmentUploaded, setAssignmentUploaded] = useState((submitted === "true"));
+  const [assignmentUploaded, setAssignmentUploaded] = useState((!edit && assignmentData.state == "submitted"));
 
   const handleFileUpload = (event) => {
-    // Handle file drop functionality here (not implemented yet)
+    // Handle file drop functionality here
     event.preventDefault();
     console.log('File uploaded');
     setAssignmentUploaded(true);
+    toast.success("Assignment Successfully Uploaded!", {
+      position: "top-center",
+      autoClose: 2500
+    });
   };
 
   const handleSubmit = () => {
-    // Handle submit functionality here (not implemented yet)
+    // Handle submit functionality
     console.log('Assignment submitted');
-    location.href='/student/assignments?submitted=true'
+    localStorage.setItem("assignments", JSON.stringify(assignmentsData.map((element) => {
+      if (element.id == id) {
+        return { ...element, state: "submitted" };
+      }
+      return element;
+    })));
+    location.href='/student/assignments';
   };
 
   const goBack = () => {
-    // Handle go back functionality here (not implemented yet)
+    // Handle go back functionality
     console.log('Go back');
-    location.href='/student/assignments'
+    if (edit) {
+      location.href=`/student/assignments/submission?id=${id}`;
+    } else {
+      location.href=`/student/assignments`;
+    }
   };
 
   const showRubricInNewTab = () => {
@@ -106,6 +127,7 @@ const Submission = () => {
       <Header text="Submit Assignment" />
       <Body>
         <div className={styles.container}>
+          <ToastContainer />
           <div className={styles.header}>
             <h1>{assignment.name}</h1>
             <div className={styles.submissionInfo}>
@@ -130,8 +152,7 @@ const Submission = () => {
                   height={800}
                 />
                 <div className={styles.reupload}>
-                    <p>Upload a different file?</p>
-                    <input type="file" id="assignment" name="assignment" onChange={handleFileUpload} />
+                  <a href={`/student/assignments/submission?id=${id}&edit=true`}>Upload a different file?</a>
                 </div>
               </div>
             </>
@@ -144,8 +165,10 @@ const Submission = () => {
             </div>
           )}
           <div className={styles.buttons}>
-            <button onClick={handleSubmit}>Submit</button>
             <button onClick={goBack}>Back</button>
+            { (edit || assignmentData.state != "submitted") ? (
+                <button onClick={handleSubmit}>Submit</button>
+              ) : null }
           </div>
         </div>
       </Body>

@@ -89,16 +89,16 @@
 }
 /* Additional styles for different button colors */
 .assignment-submit {
-  background-color: #4CAF50; /* Green */
+  background-color: var(--clickable-primary);
   color: white;
 }
 
 .assignment-edit {
-  background-color: var(--clickable-primary); /* default clickable color (blue) */
-  color: white;
+  background-color: #ffc107;
+  color: black;
 }
 
 .assignment-review {
-  background-color: #ffc107; /* Yellow */
-  color: black;
+  background-color: #4CAF50;
+  color: white;
 }
