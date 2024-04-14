@@ -1,3 +1,19 @@
+# CMPUT 302 Preamble
+
+## Group Members
+- Alexander Williams Letondre - github id: Physlex
+- James Laidlaw - github id: James-Laidlaw
+- Irene Sun - github id: IreneRSun
+- Jay Kim - github id: N/A
+- William Qi - github id: WillQizza
+- Ayrton Chilibeck - github id: Sir-NoChill
+
+## Resources Consulted
+
+Throughout the development of this project, we consulted with various LLM's as well as the React JS documentation. We also consulted the NextJS documentation.
+
+# How to tun the program.
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
