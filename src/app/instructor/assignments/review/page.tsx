@@ -7,6 +7,7 @@ import * as yaml from 'js-yaml'; // Import the js-yaml library
 import Page, { Header, Body } from "../../../../components/Page";
 import InstructorGradeSummary from './InstructorGradeSummary';
 import Summary from './Summary';
+import { useSearchParams } from 'next/navigation';
 
 const yamlContent = `
     rubric:
@@ -59,6 +60,7 @@ const InstructorReviewPage = () => {
   const [resizeTrigger, setResizeTrigger] = useState(false);
   const [activeCommentId, setActiveCommentId] = useState(-1);
   const [aiView, setAiView] = useState(false);
+  const params = useSearchParams();
 
   // Extract rubric and comments from data object
   const { comments } = data;
@@ -249,7 +251,7 @@ const InstructorReviewPage = () => {
         <h1>Review Assignment</h1>
         <div style={{ display: "flex" }}>
           <label htmlFor="aiReview" style={{ margin: 0, color: "yellow", fontSize: "1.25em" }}>AI Review</label>
-          <input id="aiReview" style={{ marginLeft: 10, width: "1.25em" }} type="checkbox" checked={aiView} onChange={e => setAiView(e.target.checked)} />
+          <input id="aiReview" style={{ marginLeft: 10, width: "1.25em" }} type="checkbox" checked={aiView} onChange={e => false} />
         </div>
       </Header>
       <div>
@@ -257,8 +259,7 @@ const InstructorReviewPage = () => {
           <div className={styles['main-layout']}>
             <div className={styles['review-page']}>
               <div className={styles['left-column']}>
-                <h2 style={{ margin: 0 }}>ENGL 302</h2>
-                <h4>Student 1</h4>
+                <h2 style={{ margin: 0 }}>English</h2>
                 <button className={styles['advanced-view-button']} style={{ marginBottom: 10 }} onClick={()=>location.href='review/advanced_view'}>
                   Show advanced view
                 </button>

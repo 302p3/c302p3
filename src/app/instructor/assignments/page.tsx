@@ -19,7 +19,7 @@ const InstructorAssignments = () => {
   const handleReview = (assignmentId: number, studentId: number) => {
     // Handle review functionality here
     console.log(`Reviewing assignment with ID: ${assignmentId} on student with ID: ${studentId}`);
-    location.href = "/instructor/assignments/review"
+    location.href = `/instructor/assignments/review?student=${studentId}`;
   };
 
   const handlePublishMarks = (assignmentId: number) => {
