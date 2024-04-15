@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { X } from 'react-bootstrap-icons';
 import styles from './page.module.css';
 import * as yaml from 'js-yaml'; // Import the js-yaml library
 import Page, { Header, Body } from "../../../../components/Page";
@@ -54,6 +55,7 @@ const InstructorReviewPage = () => {
     rubric: { category: string, max_marks: number }[],
     comments: { position: { start: number, end: number }, content: string, id: number, type: "instructor"|"ai"|"plagiarism" }[],
   }>(yaml.load(yamlContent) as any);
+  const [nextId, setNextId] = useState(data.comments.length + 1);
   const [resizeTrigger, setResizeTrigger] = useState(false);
   const [activeCommentId, setActiveCommentId] = useState(-1);
   const [aiView, setAiView] = useState(false);
@@ -76,6 +78,12 @@ const InstructorReviewPage = () => {
         onClick={() => setActiveCommentId(id)}
         >
         <div style={{ position: "relative" }}>
+          <X style={{ float: "right", cursor: "pointer" }} onClick={() => {
+            setData({
+              ...data,
+              comments: data.comments.filter(c => c.id !== id)
+            });
+          }} />
           <div className={styles['comment-x-line']} data-comment-id={id}></div>
           <b>{type === "ai" || type === "plagiarism" ? "AI Comment" : "Comment"}</b> <br />
           <hr /><br />
@@ -212,9 +220,10 @@ const InstructorReviewPage = () => {
         data.comments.push({
           position: { start, end },
           content: "...",
-          id: data.comments.length + 1,
+          id: nextId,
           type: "instructor"
         });
+        setNextId(nextId + 1);
         setData({
           rubric: data.rubric,
           comments: data.comments
@@ -227,7 +236,7 @@ const InstructorReviewPage = () => {
     document.addEventListener("mouseup", onMouseUp);
 
     return () => document.removeEventListener("mouseup", onMouseUp);
-  }, [commentDivs, data]);
+  }, [commentDivs, data, nextId]);
 
   const handleCompleteMarking = () => {
     window.location.href = "/instructor/assignments";
@@ -250,6 +259,9 @@ const InstructorReviewPage = () => {
               <div className={styles['left-column']}>
                 <h2 style={{ margin: 0 }}>ENGL 302</h2>
                 <h4>Student 1</h4>
+                <button className={styles['advanced-view-button']} style={{ marginBottom: 10 }} onClick={()=>location.href='review/advanced_view'}>
+                  Show advanced view
+                </button>
                 <div className={`${styles['assignment-details']}`}> {/* Apply left-column-content style here */}
                   <h3>Rubric Details</h3>
                 </div>

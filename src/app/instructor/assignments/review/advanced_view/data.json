@@ -1,0 +1,68 @@
+[
+  {
+    "name": "AI 1 - Proofreader.ai",
+    "description": "This AI model is designed to detect and correct grammatical, spelling, and punctuation errors. It evaluates its criteria based on the number and severity of errors.",
+    "criteriaEvaluation": "The AI assigns a higher significance score to texts with more errors, as they are more likely to be indicative of academic dishonesty.",
+    "factors": [
+      { "name": "Published Articles", "significance": 0.8 },
+      { "name": "Other Students", "significance": 0.6 },
+      { "name": "Class Materials", "significance": 0.9 },
+      { "name": "Creativity", "significance": 0.2 }
+    ]
+  },
+  {
+    "name": "AI 2 - Plagiarism Detector",
+    "description": "This AI model is designed to detect instances of plagiarism by comparing the text against a database of published articles, other students' work, and class materials. It evaluates its criteria based on the number and length of matching phrases.",
+    "criteriaEvaluation": "The AI assigns a higher significance score to texts with more and longer matching phrases, as they are more likely to be indicative of plagiarism.",
+    "factors": [
+      { "name": "Published Articles", "significance": 0.2 },
+      { "name": "Other Students", "significance": 0.4 },
+      { "name": "Class Materials", "significance": 0.6 },
+      { "name": "Creativity", "significance": 0.8 }
+    ]
+  },
+  {
+    "name": "AI 3 - Ghostwriting Detector",
+    "description": "This AI model is designed to detect instances of ghostwriting by analyzing the text for inconsistencies in style, tone, and vocabulary. It evaluates its criteria based on the number and severity of inconsistencies.",
+    "criteriaEvaluation": "The AI assigns a higher significance score to texts with more and more severe inconsistencies, as they are more likely to be indicative of ghostwriting.",
+    "factors": [
+      { "name": "Published Articles", "significance": 0.5 },
+      { "name": "Other Students", "significance": 0.3 },
+      { "name": "Class Materials", "significance": 0.7 },
+      { "name": "Creativity", "significance": 0.9 }
+    ]
+  },
+  {
+    "name": "AI 4 - Collusion Detector",
+    "description": "This AI model is designed to detect instances of collusion by comparing the text against other students' work and class materials. It evaluates its criteria based on the number and length of matching phrases and the similarity of ideas.",
+    "criteriaEvaluation": "The AI assigns a higher significance score to texts with more and longer matching phrases and more similar ideas, as they are more likely to be indicative of collusion.",
+    "factors": [
+      { "name": "Published Articles", "significance": 0.7 },
+      { "name": "Other Students", "significance": 0.9 },
+      { "name": "Class Materials", "significance": 0.5 },
+      { "name": "Creativity", "significance": 0.3 }
+    ]
+  },
+  {
+    "name": "AI 5 - Fabrication Detector",
+    "description": "This AI model is designed to detect instances of fabrication by analyzing the text for inconsistencies in facts, statistics, and references. It evaluates its criteria based on the number and severity of inconsistencies.",
+    "criteriaEvaluation": "The AI assigns a higher significance score to texts with more and more severe inconsistencies, as they are more likely to be indicative of fabrication.",
+    "factors": [
+      { "name": "Published Articles", "significance": 0.3 },
+      { "name": "Other Students", "significance": 0.5 },
+      { "name": "Class Materials", "significance": 0.8 },
+      { "name": "Creativity", "significance": 0.7 }
+    ]
+  },
+  {
+    "name": "AI 6 - Falsification Detector",
+    "description": "This AI model is designed to detect instances of falsification by analyzing the text for inconsistencies in data, results, and conclusions. It evaluates its criteria based on the number and severity of inconsistencies." ,
+    "criteriaEvaluation": "The AI assigns a higher significance score to texts with more and more severe inconsistencies, as they are more likely to be indicative of falsification.",
+    "factors": [
+      { "name": "Published Articles", "significance": 0.9 },
+      { "name": "Other Students", "significance": 0.2 },
+      { "name": "Class Materials", "significance": 0.4 },
+      { "name": "Creativity", "significance": 0.6 }
+    ]
+  }
+]

@@ -1,0 +1,45 @@
+/* GraphPage.module.css */
+.graphPage {
+  padding: 20px;
+}
+
+.graph-container {
+  margin-top: 20px;
+  max-height: 75vh;
+  align-items: center;
+}
+
+.barChart {
+  display: flex;
+}
+
+.bar {
+  flex: 1;
+  background-color: #007bff;
+  color: #fff;
+  text-align: center;
+  padding: 10px;
+  cursor: pointer;
+  position: relative;
+}
+
+.bar:not(:last-child) {
+  margin-right: 10px;
+}
+
+.bar::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 5px;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 5px;
+  display: none;
+}
+
+.bar:hover::after {
+  display: block;
+}
