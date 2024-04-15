@@ -78,12 +78,10 @@ const StudentReviewPage = () => {
         className={styles['comment']}
         onClick={() => setActiveCommentId(id)}
         >
-        <div style={{ position: "relative" }}>
-          <div className={styles['comment-x-line']} data-comment-id={id}></div>
+        <div className={styles['comment-x-line']} data-comment-id={id}></div>
           <b>{type === "ai" || type === "plagiarism" ? "AI Comment" : "Comment"}</b> <br />
           <hr /><br />
           <div contentEditable={type === "instructor"} onInput={() => onResize()}>{content}</div>
-        </div>
       </div>
     );
   });
@@ -119,7 +117,7 @@ const StudentReviewPage = () => {
       cannotBeLessThan = positionedTop + commentDiv.offsetHeight + 10;  // add 10 for a tiny gap.
     
       const commentXLineDiv = commentDiv.querySelector(`.${styles['comment-x-line']}`) as HTMLDivElement;
-      commentXLineDiv.style.top = "-11px";
+      commentXLineDiv.style.top = "0px";
       commentXLineDiv.style.left = "-30px";
     }
 
@@ -139,9 +137,9 @@ const StudentReviewPage = () => {
         commentYLineDiv.style.height = `${highlightedText.offsetTop - commentDiv.offsetTop}px`;
       } else {
         commentYLineDiv.style.top = `${highlightedText.offsetTop}px`;
-        commentYLineDiv.style.height = `${commentDiv.offsetTop - highlightedText.offsetTop}px`;
+        commentYLineDiv.style.height = `${commentDiv.offsetTop - highlightedText.offsetTop + 5}px`;
       }
-      commentYLineDiv.style.left = "calc(60vw - 20px)";
+      commentYLineDiv.style.left = "calc(60vw - 9px)";
       console.log(commentYLineDiv, highlightedText.offsetTop - commentDiv.offsetTop);
     }
   }, [ commentDivs, commentLineDivs, aiView ]);

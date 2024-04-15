@@ -146,9 +146,9 @@ const InstructorReviewPage = () => {
         commentYLineDiv.style.height = `${highlightedText.offsetTop - commentDiv.offsetTop}px`;
       } else {
         commentYLineDiv.style.top = `${highlightedText.offsetTop}px`;
-        commentYLineDiv.style.height = `${commentDiv.offsetTop - highlightedText.offsetTop}px`;
+        commentYLineDiv.style.height = `${commentDiv.offsetTop - highlightedText.offsetTop + 5}px`;
       }
-      commentYLineDiv.style.left = "calc(60vw - 20px)";
+      commentYLineDiv.style.left = "calc(60vw - 9px)";
       console.log(commentYLineDiv, highlightedText.offsetTop - commentDiv.offsetTop);
     }
   }, [ commentDivs, commentLineDivs, aiView ]);
